@@ -2,6 +2,11 @@
 """
 A long-running program that watches a directory.
 
+NOTE This implementation has a bug :)
+If a partial magic string is appended to a watched file, saved, and then completed later on .. 
+it will not find the match because it uses raw file offsets instead of newline delimiters
+to keep track of last position read.
+
 """
 import sys
 import os
@@ -40,11 +45,13 @@ def signal_handler(sig_num, frame):
 def search_for_magic(fileobj, start, magic_string):
     """Searches fileobj for magic_string, starting from start_offset"""
     # start is a tuple that contains (byte_offset, line_num) to start searching from.
+    if start is None:
+        start = (0, 1)
     fileobj.seek(start[0])
     line_num = start[1]
     for line_num, line in enumerate(fileobj, start[1]):
         if magic_string in line:
-            logger.info('Match on line {}: {}'.format(line_num, line.strip()))
+            logger.info('Matched file {} on line {}: {}'.format(fileobj.name, line_num, line.strip()))
     return fileobj.tell(), line_num
 
 
@@ -67,10 +74,13 @@ def watch_directory(path, magic_string, ext, interval):
             logger.info('File(s) added: {}'.format(', '.join(added)))
         if removed:
             logger.info('File(s) removed: {}'.format(', '.join(removed)))
+
         for f in after:
             if f.endswith(ext):
                 with open(f) as fo:
-                    after[f] = search_for_magic(fo, before[f], magic_string)
+                    after[f] = search_for_magic(fo, before.get(f), magic_string)
+
+        # save new file dictionary for next time through
         before = after
 
 
