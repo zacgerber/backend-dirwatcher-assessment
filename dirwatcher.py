@@ -3,7 +3,7 @@
 A long-running program that watches a directory.
 
 NOTE This implementation has a bug :)
-If a partial magic string is appended to a watched file, saved, and then completed later on .. 
+If a partial magic string is appended to a watched file, saved, and then completed later on ..
 it will not find the match because it uses raw file offsets instead of newline delimiters
 to keep track of last position read.
 
@@ -42,17 +42,18 @@ def signal_handler(sig_num, frame):
         exit_flag = True
 
 
-def search_for_magic(fileobj, start, magic_string):
-    """Searches fileobj for magic_string, starting from start_offset"""
-    # start is a tuple that contains (byte_offset, line_num) to start searching from.
-    if start is None:
-        start = (0, 1)
-    fileobj.seek(start[0])
-    line_num = start[1]
-    for line_num, line in enumerate(fileobj, start[1]):
-        if magic_string in line:
-            logger.info('Matched file {} on line {}: {}'.format(fileobj.name, line_num, line.strip()))
-    return fileobj.tell(), line_num
+def search_for_magic(filename, pos, start_line, magic_string):
+    """Searches fileobj for magic_string"""
+    with open(filename) as f:
+        f.seek(pos)
+        line_num = start_line
+        for line_num, line in enumerate(f, start_line + 1):
+            # don't count as a full line if there is no newline at the end
+            if not line.endswith('\n'):
+                line_num -= 1
+            if magic_string in line:
+                logger.info('Magic text found: line {} of file {}'.format(line_num - 1, f.name))
+        return f.tell(), line_num
 
 
 def watch_directory(path, magic_string, ext, interval):
@@ -60,32 +61,32 @@ def watch_directory(path, magic_string, ext, interval):
     # This dictionary is a mapping of filenames.  Keys are absolute paths,
     # Values are the last byte offset from previous iteration (or 0)
 
-    def file_dict():
-        abs_path = os.path.abspath(path)
-        return dict([(os.path.join(abs_path, f), (0, 1)) for f in os.listdir(abs_path)])
+    abs_path = os.path.abspath(path)
+    files = {}
 
-    before = file_dict()
     while not exit_flag:
         time.sleep(interval)
-        after = file_dict()
-        added = [f for f in after if f not in before]
-        removed = [f for f in before if f not in after]
-        if added:
-            logger.info('File(s) added: {}'.format(', '.join(added)))
-        if removed:
-            logger.info('File(s) removed: {}'.format(', '.join(removed)))
-
-        for f in after:
+        # add files to our dict that are not yet present
+        for f in os.listdir(abs_path):
+            if f not in files:
+                logger.info('File added: ' + f)
+                files[f] = (0, 1)
+        # remove files that have disappeared
+        # NOTE USE OF list(dict) to avoid 'dictionary changed size during iteration'
+        for f in list(files):  
+            if f not in os.listdir(abs_path):
+                logger.info('File removed: ' + f)
+                files.pop(f)
+        
+        for f, v in files.items():
+            pos, line = v
             if f.endswith(ext):
-                with open(f) as fo:
-                    after[f] = search_for_magic(fo, before.get(f), magic_string)
-
-        # save new file dictionary for next time through
-        before = after
+                fp = os.path.join(abs_path, f)
+                files[f] = search_for_magic(fp, pos, line, magic_string)
 
 
-def main():
-
+def create_parser():
+    """Returns a cmd line argument parser"""
     parser = argparse.ArgumentParser(
         description='Watches a directory of text files for a magic string')
     parser.add_argument('-e', '--ext', type=str, default='.txt',
@@ -94,6 +95,10 @@ def main():
                         default=1.0, help='Number of seconds between polling')
     parser.add_argument('path', help='Directory path to watch')
     parser.add_argument('magic', help='String to watch for')
+    return parser
+
+def main():
+    parser = create_parser()
     args = parser.parse_args()
 
     # If no cmd line args present, they are just horsing around.
