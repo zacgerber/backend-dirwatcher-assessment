@@ -1,14 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
-A long-running program that watches a directory.
-
-NOTE This implementation has a bug :)
-If a partial magic string is appended to a watched file, saved, and then completed later on ..
-it will not find the match because it uses raw file offsets instead of newline delimiters
-to keep track of last position read.
-
+A long-running program that watches a directory for files with a
+certain file extension, and polls those files for a magic string.
 """
-import sys
+__author__ = "madarp"
+
 import os
 import time
 import logging
@@ -18,23 +15,27 @@ import errno
 from datetime import datetime as dt
 
 
-# Create a local logger instance for this filename only
+# Create a local logger instance for this module
 logger = logging.getLogger(__name__)
 
-# A global flag shared by the main loop, and the signal handler
+# A global flag shared by main(), watch_directory(), signal_handler()
 exit_flag = False
+
+# Mapping a OS signal number to its name (the python2 way)
+signames = dict((k, v) for v, k in reversed(sorted(signal.__dict__.items()))
+                if v.startswith('SIG') and not v.startswith('SIG_'))
 
 
 def signal_handler(sig_num, frame):
     """
-    This is a handler for SIGTERM and SIGINT.  Other signals can be mapped here as well (SIGHUP?)
-    Basically it just sets an event, and main() will exit it's loop when the signal is trapped.
+    This is a handler for SIGTERM and SIGINT.
+    It just sets a flag, and main() will exit it's loop when the signal is trapped.
     :param sig_num: The integer signal number that was trapped from the OS.
     :param frame: Not used
     :return None
     """
     global exit_flag
-    logger.warn('Received OS process signal {}'.format(sig_num))
+    logger.warn('Received OS process signal ' + signames[sig_num])
 
     # DO NOT use sys.exit() in here.  We want to give the while-loop a chance to close down
     # any open files, sockets, database connections, etc. so we don't leak resources.
@@ -73,11 +74,11 @@ def watch_directory(path, magic_string, ext, interval):
                 files[f] = (0, 1)
         # remove files that have disappeared
         # NOTE USE OF list(dict) to avoid 'dictionary changed size during iteration'
-        for f in list(files):  
+        for f in list(files):
             if f not in os.listdir(abs_path):
                 logger.info('File removed: ' + f)
                 files.pop(f)
-        
+
         for f, v in files.items():
             pos, line = v
             if f.endswith(ext):
@@ -97,6 +98,7 @@ def create_parser():
     parser.add_argument('magic', help='String to watch for')
     return parser
 
+
 def main():
     parser = create_parser()
     args = parser.parse_args()
@@ -104,7 +106,7 @@ def main():
     # If no cmd line args present, they are just horsing around.
     if not args:
         parser.print_usage()
-        sys.exit(1)
+        exit(1)
 
     # Take a time measurement of when we started watching
     app_start_time = dt.now()
@@ -158,8 +160,8 @@ def main():
     logger.info(
         '\n'
         '-------------------------------------------------------------------\n'
-        '   Stopped {0}\n'
-        '   Uptime was {1}\n'
+        '   Stopped {}\n'
+        '   Uptime was {}\n'
         '-------------------------------------------------------------------\n'
         .format(__file__, str(uptime)))
 
@@ -168,4 +170,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    exit(main())
