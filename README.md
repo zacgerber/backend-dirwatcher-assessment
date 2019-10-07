@@ -1,16 +1,24 @@
-		
-## Dirwatcher
-Long Running Program with signal handling and logging
-
- 
+<table style="width: 646px;">
+<tbody>
+<tr>
+<td style="width: 124px;"><img src="https://images-na.ssl-images-amazon.com/images/I/51XV10AJC8L._SX333_BO1,204,203,200_.jpg" width="124" height="166" /></td>
+<td style="width: 124px;"><img src="https://mysite.du.edu/~jcalvert/railway/anim1.gif" width="124" height="166" /></td>
+<td style="width: 241.832px;"><img src="http://www.dmainsurance.com/wp-content/uploads/2017/06/logging.jpg" width="202" height="150" /></td>
+<td style="width: 257.168px;">
+<h2 style="text-align: center;">Dirwatcher</h2>
+<p style="text-align: center;">Long Running Program with signal handling and logging</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 ### Objectives
  - Create a long running program
- - Demonstrate signal handling
+ - Demonstrate OS signal handling (SIGTERM, SIGINT)
  - Demonstrate program logging
  - Use exception handling to keep the program running
- - Create and structure your own code repository using best practices
- - Show that you know how to read a set of requirements and deliver on them, asking for clarification if anything is unclear.
+ - Structure your code repository using best practices
+ - Read a set of requirements and deliver on them, asking for clarification if anything is unclear.
 
 ### Goal
 For this assessment you will create your own small long-running program named `dirwatcher.py`.  This will give you experience in structuring a long-running program. The `dirwatcher.py` program should accept some command line arguments that will instruct it to monitor a given directory for text files that are created within the monitored directory.  Your `dirwatcher.py` program will continually search within all files in the directory for a 'magic' string which is provided as a command line argument.  This can be implemented with a timed polling loop.  If the magic string is found in a file, your program should log a message indicating which file and line number the magic text was found.  Once a magic text occurrence has been logged, it should not be logged again unless it appears in the file as another subsequent line entry later on.  Don't worry about reporting multiple occurrences of the magic string in a single line.
@@ -137,4 +145,4 @@ Example:  How to log a shutdown from within your program
 Will your long running program fail if the directory under watch is suddenly deleted?  If your watcher is pointed at another program's logging directory (which may come or go under different circumstances), you may want to add an exception handler and do some longer-duration retries instead of bailing out.  Perhaps you could retry the directory every 5 seconds.  Once you have a valid directory, you could do the file polling every 1 second.  This would require an outer loop and an inner loop.  
 
 ### Credits
-This assignment was inspired by the story of The Cuckoo's Egg
+This assignment was inspired by the story of (The Cuckoo's Egg)[https://en.wikipedia.org/wiki/The_Cuckoo%27s_Egg]
