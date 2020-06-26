@@ -151,4 +151,4 @@ To test the OS signal handler part of your Dirwatcher, send a SIGTERM to your pr
 Will your long-running program fail if the directory under watch is suddenly deleted? If your watcher is pointed at another program's logging directory (which may come or go under different circumstances), you may want to add an exception handler and do some longer-duration retries instead of bailing out. Perhaps you could retry the directory every 5 seconds. Once you have a valid directory, you could do the file polling every 1 second. This would require an outer loop and an inner loop.
 
 ### Credits
-This assignment was inspired by the story of (The Cuckoo's Egg)[https://en.wikipedia.org/wiki/The_Cuckoo%27s_Egg].
+This assignment was inspired by the story of [The Cuckoo's Egg](https://en.wikipedia.org/wiki/The_Cuckoo%27s_Egg).
