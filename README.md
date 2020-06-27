@@ -109,8 +109,6 @@ Create a versatile command line argument parser that can handle these options:
 
 
 ### Testing the Program
-There is test code included in this repo. Now that you know how Test Driven Development works, you should be able to write code that will pass the entire test suite. Remember, VS Code has a built-in framework for discovering and running tests.
-
 Test your Dirwatcher program using **two** terminal windows. In the first window, start your Dirwatcher with various sets of command line arguments. Open a second terminal window and navigate to the same directory where your Dirwatcher is running and try the following:
 
  - Run Dirwatcher with non-existent directory &mdash; At each polling interval, it should complain about the missing watch directory.
