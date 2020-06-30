@@ -55,6 +55,7 @@ def signal_handler(sig_num, frame):
     """
     # log the associated signal name
     logger.warn('Received ' + signal.Signals(sig_num).name)
+    exit_flag = True
 
 
 def main():
