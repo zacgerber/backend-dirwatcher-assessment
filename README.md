@@ -30,7 +30,7 @@ Your program should terminate itself when catching SIGTERM or SIGINT signals (be
 **NOTE**: Handling OS signals and polling the directory that is being watched will be two separate functions of your program. You won't be getting an OS signal when files are created or deleted.
 
 ### Success Criteria
- - Use all best practices that have been taught so far: docstrings, PEP8, unit tests, clean and readable code, and meaningful commit messages
+ - Use all best practices that have been taught so far: docstrings, PEP8, clean and readable code, and meaningful commit messages
  - Have a demonstrable OS signal handler
  - Log messages for files containing "magic text"
  - Handle and log different exceptions such as "file not found", "directory does not exist", as well as handle and report top-level unknown exceptions so that your program stays alive
