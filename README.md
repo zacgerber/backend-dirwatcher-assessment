@@ -100,7 +100,7 @@ Create a versatile command line argument parser that can handle these options:
 
 1. For every file in the directory, add it to your dictionary if it is not already there (exclude files without proper extensions). Report new files that are added to your dictionary.
 1. For every entry in your dictionary, find out if it still exists in the directory. If not, remove it from your dictionary and report it as deleted.
-1. Once you have synchronized your dictionary, it is time to iterate through all of its files and look for magic text, starting from the line number where you left off last time.
+1. Once you have synchronized your dictionary, it is time to iterate through all of its files and look for magic text, starting from the line number where you left off last time. 
 
 **Don't** structure your program as one big monolithic function.
 
