@@ -18,23 +18,23 @@ files = {}
 exit_flag = False
 
 
-def magic_word_getter(path, start_line, magic_word):
+def magic_word_getter(path, start_row, magic_word):
     logger.info(f'searching {path} for instances of {magic_word}')
-    line_number = 0
+    line_start = 0
     with open(path) as f:
-        for line_number, line in enumerate(f):
-            if line_number >= start_line:
+        for line_start, line in enumerate(f):
+            if line_start >= start_row:
                 if magic_word in line:
                     logger.info(
                         f'Match found for {magic_word}'
-                        f'found on line {line_number+1} in {path}'
+                        f'found on line {line_start+1} in {path}'
                         )
-    return line_number + 1
+    return line_start + 1
 
 
 def dir_watcher(args):
-    file_list = os.listdir(args.directory)
-    detect_added_and_removed_files(file_list, args.extension)
+    file_collection = os.listdir(args.directory)
+    detect_added_and_removed_files(file_collection, args.extension)
     for f in files:
         files[f] = magic_word_getter(
             os.path.join(args.directory, f),
@@ -43,17 +43,17 @@ def dir_watcher(args):
         )
 
 
-def detect_added_and_removed_files(file_list, ext):
+def detect_added_and_removed_files(file_collection, ext):
     global files
-    for f in file_list:
+    for f in file_collection:
         if f.endswith(ext) and f not in files:
             files[f] = 0
             logger.info(f'{f} added to watchlist.')
     for f in list(files):
-        if f not in file_list:
+        if f not in file_collection:
             logger.info(f'{f} removed from watchlist.')
             del files[f]
-    return file_list
+    return file_collection
 
 
 def signal_handler(sig_num, frame):
