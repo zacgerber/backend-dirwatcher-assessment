@@ -10,7 +10,7 @@ import signal
 import errno
 
 __Author__ = """Zachary Gerber, Michael DeMory, (video)Piero Madar,
-Mavrick Watts, Nikal Morgan"""
+Mavrick Watts, Nikal Morgan, Chris Warren"""
 
 logger = logging.getLogger(__name__)
 
