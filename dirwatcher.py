@@ -101,10 +101,8 @@ def main(args):
         datefmt='%Y-%m-%d &%H:%M:%S',
         level=logging.DEBUG
     )
-    logger.setLevel(logging.DEBUG)
-
-    fh = logging.FileHandler(filename='my_watch_log.log')
-    logger.addHandler(fh)
+    # fh = logging.FileHandler(filename='my_watch_log.log')
+    # logger.addHandler(fh)
 
     start_time = datetime.datetime.now()
     logger.info(
@@ -122,7 +120,7 @@ def main(args):
         f', Magic Text:{parsed_args.magic_word}'
         )
 
-    time.sleep(5.0)
+    # time.sleep(5.0)
 
     # Hook into these two signals from the OS
     signal.signal(signal.SIGINT, signal_handler)
@@ -136,7 +134,8 @@ def main(args):
             dir_watcher(parsed_args)
         except OSError as e:
             if e.errno == errno.ENOENT:
-                logger.error(f"{time.sleep(2)} directory not found")
+                logger.error(f"{parsed_args.directory} directory not found")
+                time.sleep(2)
             else:
                 logger.error(e)
         except Exception as e:
