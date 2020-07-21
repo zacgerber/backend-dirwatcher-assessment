@@ -19,7 +19,6 @@ exit_flag = False
 
 
 def magic_word_getter(path, start_row, magic_word):
-    logger.info(f'searching {path} for instances of {magic_word}')
     line_start = 0
     with open(path) as f:
         for line_start, line in enumerate(f):
